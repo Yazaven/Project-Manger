@@ -2,13 +2,24 @@ import React from "react";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
+import CryptoJS from "crypto-js";
+
+const generateSecretHash = (username: string) => {
+  const clientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "";
+  const clientSecret = process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET || "";
+
+  const message = username + clientId;
+  const secretHash = CryptoJS.HmacSHA256(message, clientSecret).toString(CryptoJS.enc.Base64);
+  return secretHash;
+};
 
 Amplify.configure({
   Auth: {
     Cognito: {
       userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
-      userPoolClientId:
-        process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
+      userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
+      authenticationFlowType: "USER_PASSWORD_AUTH",
+      secretHash: generateSecretHash, // Use this when making login requests
     },
   },
 });
