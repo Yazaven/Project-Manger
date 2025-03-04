@@ -3,26 +3,26 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
 import CryptoJS from "crypto-js";
+import { Auth } from 'aws-amplify';
 
-const generateSecretHash = (username: string) => {
-  const clientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "";
-  const clientSecret = process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET || "";
-
-  const message = username + clientId;
-  const secretHash = CryptoJS.HmacSHA256(message, clientSecret).toString(CryptoJS.enc.Base64);
-  return secretHash;
+const generateSecretHash = (username: string): string => {
+  // Implement the logic to generate secretHash
+  return CryptoJS.HmacSHA256(username, process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_SECRET || "").toString(CryptoJS.enc.Base64);
 };
 
+// Directly configure Amplify with the Auth settings
 Amplify.configure({
+  region: process.env.NEXT_PUBLIC_COGNITO_REGION || "",
   Auth: {
-    Cognito: {
-      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
-      userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
-      authenticationFlowType: "USER_PASSWORD_AUTH",
-      secretHash: generateSecretHash, // Use this when making login requests
-    },
-  },
+    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
+    userPoolWebClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
+    authenticationFlowType: "USER_PASSWORD_AUTH",
+    clientMetadata: { secretHash: generateSecretHash }
+  }
 });
+
+
+
 
 const formFields = {
   signUp: {
