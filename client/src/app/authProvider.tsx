@@ -3,28 +3,28 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
 import CryptoJS from "crypto-js";
+import { Auth } from 'aws-amplify';
 
+interface CustomAuthConfig extends Auth.Config {
+  userPoolId: string;
+  userPoolWebClientId: string;
+  authenticationFlowType: string;
+  clientMetadata: {
+    secretHash: string;
+  };
+}
 
-// Custom hash generation function
-const generateSecretHash = (username: string) => {
-  const clientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "";
-  const clientSecret = process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET || "";
-
-  const message = username + clientId;
-  const secretHash = CryptoJS.HmacSHA256(message, clientSecret).toString(CryptoJS.enc.Base64);
-  return secretHash;
+const authConfig: CustomAuthConfig = {
+  region: process.env.NEXT_PUBLIC_COGNITO_REGION || "",
+  Auth: {
+    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
+    userPoolWebClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
+    authenticationFlowType: "USER_PASSWORD_AUTH",
+    clientMetadata: { secretHash: generateSecretHash }
+  }
 };
 
-// Correct configuration for Amplify
-Amplify.configure({
-  region: process.env.NEXT_PUBLIC_COGNITO_REGION || "", // Global region for Amplify
-  Auth: {
-    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "", // Add your User Pool ID
-    userPoolWebClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "", // Client ID for User Pool
-    authenticationFlowType: "USER_PASSWORD_AUTH", // This should work now
-    clientMetadata: { secretHash: generateSecretHash }, // Custom secretHash function
-  },
-});
+Auth.configure(authConfig);
 
 
 
