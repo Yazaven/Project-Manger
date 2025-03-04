@@ -4,6 +4,8 @@ import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
 import CryptoJS from "crypto-js";
 
+
+// Custom hash generation function
 const generateSecretHash = (username: string) => {
   const clientId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "";
   const clientSecret = process.env.NEXT_PUBLIC_COGNITO_CLIENT_SECRET || "";
@@ -15,14 +17,15 @@ const generateSecretHash = (username: string) => {
 
 // Correct configuration for Amplify
 Amplify.configure({
+  region: process.env.NEXT_PUBLIC_COGNITO_REGION || "", // Global region for Amplify
   Auth: {
-    region: process.env.NEXT_PUBLIC_COGNITO_REGION || "", // Add your region
     userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "", // Add your User Pool ID
     userPoolWebClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "", // Client ID for User Pool
     authenticationFlowType: "USER_PASSWORD_AUTH", // This should work now
     clientMetadata: { secretHash: generateSecretHash }, // Custom secretHash function
   },
 });
+
 
 
 
