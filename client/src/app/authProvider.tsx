@@ -5,16 +5,13 @@ import "@aws-amplify/ui-react/styles.css";
 import CryptoJS from "crypto-js";
 import { Auth } from 'aws-amplify';
 
-interface CustomAuthConfig extends Auth.Config {
-  userPoolId: string;
-  userPoolWebClientId: string;
-  authenticationFlowType: string;
-  clientMetadata: {
-    secretHash: string;
-  };
-}
+const generateSecretHash = (username: string): string => {
+  // Implement the logic to generate secretHash
+  return CryptoJS.HmacSHA256(username, process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_SECRET || "").toString(CryptoJS.enc.Base64);
+};
 
-const authConfig: CustomAuthConfig = {
+// Directly configure Amplify with the Auth settings
+Amplify.configure({
   region: process.env.NEXT_PUBLIC_COGNITO_REGION || "",
   Auth: {
     userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
@@ -22,9 +19,7 @@ const authConfig: CustomAuthConfig = {
     authenticationFlowType: "USER_PASSWORD_AUTH",
     clientMetadata: { secretHash: generateSecretHash }
   }
-};
-
-Auth.configure(authConfig);
+});
 
 
 
