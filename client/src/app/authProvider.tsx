@@ -15,14 +15,13 @@ const generateSecretHash = (username: string) => {
 
 Amplify.configure({
   Auth: {
-    Cognito: {
-      userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
-      userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
-      authenticationFlowType: "USER_PASSWORD_AUTH",
-      secretHash: generateSecretHash, // Use this when making login requests
-    },
+    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
+    userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
+    region: process.env.NEXT_PUBLIC_COGNITO_REGION || "", // Add this if region is missing
+    authenticationFlowType: "USER_PASSWORD_AUTH", // This should work now
   },
 });
+
 
 const formFields = {
   signUp: {
