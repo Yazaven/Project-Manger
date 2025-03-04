@@ -13,14 +13,17 @@ const generateSecretHash = (username: string) => {
   return secretHash;
 };
 
+// Correct configuration for Amplify
 Amplify.configure({
   Auth: {
-    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "",
-    userPoolClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "",
-    region: process.env.NEXT_PUBLIC_COGNITO_REGION || "", // Add this if region is missing
+    region: process.env.NEXT_PUBLIC_COGNITO_REGION || "", // Add your region
+    userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || "", // Add your User Pool ID
+    userPoolWebClientId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_CLIENT_ID || "", // Client ID for User Pool
     authenticationFlowType: "USER_PASSWORD_AUTH", // This should work now
+    clientMetadata: { secretHash: generateSecretHash }, // Custom secretHash function
   },
 });
+
 
 
 const formFields = {
